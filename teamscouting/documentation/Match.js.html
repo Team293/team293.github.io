@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Match.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Match.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @typedef {Object} Alliance
+ * @property {Match} match
+ * @property {string} color
+ * @property {Robot[]} robots
+ */
+
+class Match {
+    constructor(team1, team2, team3, team4, team5, team6) {
+        this.archive = false;
+        this.redAlliance = new Alliance(this, RED, team1, team2, team3);
+        this.blueAlliance = new Alliance(this, BLUE, team4, team5, team6);
+
+        this.events = [];
+
+        this.mode = {
+            auto: true,
+            teleop: false,
+
+            isAuto() {
+                return this.auto;
+            },
+
+            isTeleop() {
+                return this.teleop;
+            },
+        };
+
+        this.timer = {
+            game: this,
+            time: 0,
+            // Whether the timer is running or not
+            running: false,
+            autoLength: 15, // seconds
+            gameLength: 135, // 2:15 in seconds
+            // whether we are in auto or teleop
+            lastUpdate: Date.now(),
+            deltaTime: 0,
+
+            reset() {
+                this.time = 0;
+                this.running = false;
+            },
+
+            play() {
+                if (this.time &lt; this.matchLength) this.running = true;
+            },
+
+            pause() {
+                this.running = false;
+            },
+
+            toggle() {
+                if (this.time &lt; this.matchLength) this.running = !this.running;
+            },
+
+            setTime(time) {
+                this.time = time;
+            },
+
+            // Get time between current time and last update
+            delta() {
+                const now = Date.now();
+                this.deltaTime = (now - this.lastUpdate) / 1000;
+                this.lastUpdate = now;
+                return this.deltaTime;
+            },
+
+            update() {
+                // update the timer
+                this.delta(); // calculate the delta time
+
+                if (this.running) {
+                    // increment the timer
+                    this.time += this.deltaTime;
+                }
+                if (this.time > this.matchLength) {
+                    // set the timer to the max time
+                    this.time = this.matchLength;
+                    this.running = false;
+                }
+
+                // update the game state
+                if (this.time > this.autoLength) {
+                    // change the game state to teleop
+                    this.match.mode.auto = false;
+                    this.match.mode.teleop = true;
+                } else {
+                    // change the game state to auto
+                    this.match.mode.auto = true;
+                    this.match.mode.teleop = false;
+                }
+
+                // update the timer on the user interface
+                UserInterface.updateTimer(this.toString());
+
+                // update the play/pause button
+                UserInterface.playing(this.running);
+            },
+
+            toString() {
+                // format like 1:23.45
+                const minutes = Math.floor(this.time / 60);
+                const seconds = Math.floor(this.time % 60);
+                const milliseconds = Math.floor((this.time % 1) * 100);
+                return `${minutes.toString()}:${seconds
+                    .toString()
+                    .padStart(2, "0")}.${milliseconds
+                    .toString()
+                    .padStart(2, "0")}`;
+            },
+        };
+
+        this.scoring = {
+            getFieldState(events) {
+                // Create an object that represents the scoring grid
+                const scoringGrid = {
+                    red: new Array(27).fill([]), // 9x3 grid
+                    blue: new Array(27).fill([]), // 9x3 grid
+                };
+
+                // Create an object to keep track of the score for each alliance
+                const score = {
+                    red: 0,
+                    blue: 0,
+                };
+
+                // Loop through each event
+                for (const event of events) {
+                    // If the event is a placeGamePiece event
+                    if (event.type === "placeGamePiece") {
+                        const { alliance, location, auto } = event;
+                        // Location is the index of the array
+                        scoringGrid[alliance][location].push(event.matchPiece);
+                        // Row is the top, middle, or bottom
+                        const row = this.getPieceRow(location);
+                        // autoOrTeleop is "AUTO" or "TELEOP" depending on the time
+                        const autoOrTeleop = auto ? "AUTO" : "TELEOP";
+                        // Add the points to the score
+                        score[alliance] +=
+                            POINT_VALUES[autoOrTeleop].match_PIECES[row];
+                    }
+
+                    // If the event is a mobilityBonus event
+                    if (event.type === "mobilityBonus") {
+                        const { alliance, auto } = event;
+                        if (auto) {
+                            score[alliance] += POINT_VALUES.AUTO.MOBILITY;
+                        } else {
+                            throw new Error(
+                                "Mobility bonus can only be awarded in auto"
+                            );
+                        }
+                    }
+                }
+
+                // Calculate the link bonus for each alliance
+                score.red += this.calculateLinkBonus(scoringGrid.red);
+                score.blue += this.calculateLinkBonus(scoringGrid.blue);
+
+                return {
+                    scoringGrid,
+                    score,
+                };
+            },
+
+            calculateLinkBonus(scoringGrid) {
+                let score = 0;
+
+                let count = 0;
+                let iteration = 0;
+
+                for (const gamePiece of scoringGrid) {
+                    // Reset on new row
+                    if (iteration % 9 === 0) {
+                        count = 0;
+                    }
+
+                    // If the game piece is not empty
+                    if (gamePiece !== EMPTY) {
+                        count++;
+                    } else {
+                        count = 0;
+                    }
+
+                    // If we have 3 in a row
+                    if (count === 3) {
+                        // Add the link bonus
+                        score += POINT_VALUES.TELEOP.LINK;
+                        // Reset the count
+                        count = 0;
+                    }
+
+                    iteration++;
+                }
+
+                return score;
+            },
+
+            getPieceRow(piece) {
+                if (piece &lt; 9 * (TOP + 1)) {
+                    return "TOP";
+                } else if (piece &lt; 9 * (MIDDLE + 1)) {
+                    return "MIDDLE";
+                }
+                return "BOTTOM";
+            },
+        };
+    }
+
+    start() {
+        this.timer.start();
+    }
+
+    reset() {
+        this.timer.reset();
+        if (!this.archive) {
+            this.events = [];
+            this.redAlliance.reset();
+            this.blueAlliance.reset();
+        }
+    }
+
+    update() {
+        // update the timer element
+        this.timer.update();
+
+        UserInterface.updateGameState(this.mode.isTeleop() ? "TELEOP" : "AUTO");
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="global.html#Alliance">Alliance</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Sun Feb 05 2023 15:14:24 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
