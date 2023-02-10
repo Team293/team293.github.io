@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>293SPIKE Scouting</title>
+        <link rel="stylesheet" href="style.css" />
+        <meta name="theme-color" content="#000000" />
+        <script src="src/globals.js" defer></script>
+        <script src="src/classes/Match.js" defer></script>
+        <script src="src/classes/Alliance.js" defer></script>
+        <script src="src/classes/Robot.js" defer></script>
+        <script src="src/classes/UserInterface.js" defer></script>
+
+        <script src="src/main.js" defer></script>
+    </head>
+    <body>
+        <noscript>
+            <strong>
+                This program requires JavaScript. Please enable JavaScript to
+                continue.
+            </strong>
+        </noscript>
+        <!-- TOP BAR -->
+        <nav id="topBar">
+            <div class="third left">
+                <button class="buttonSquare" onclick="match.reset()">
+                    <i class="bi bi-skip-start"></i>
+                </button>
+                <button class="buttonSquare" onclick="match.timer.toggle()">
+                    <i id="playIcon" class="bi bi-play"></i>
+                    <i id="pauseIcon" class="bi bi-pause"></i>
+                </button>
+                <h3 class="mono" style="color: #999">
+                    <span
+                        id="timer"
+                        class="mono"
+                        style="color: #000; padding-right: 9px"
+                        >00:00.00</span
+                    >/ 2:15
+                </h3>
+                <h4 id="matchState" class="bold">AUTO</h4>
+            </div>
+            <div class="third">
+                <div class="flex">
+                    <div
+                        class="bg-red"
+                        style="
+                            width: 12px;
+                            height: 12px;
+                            transform: rotate(45deg);
+                        "
+                    ></div>
+                    <h1 id="scoreRed" class="mono">0</h1>
+                </div>
+                <h1 class="">-</h1>
+                <div class="flex">
+                    <h1 id="scoreBlue" class="mono">0</h1>
+                    <div
+                        class="bg-blue"
+                        style="
+                            width: 12px;
+                            height: 12px;
+                            transform: rotate(45deg);
+                        "
+                    ></div>
+                </div>
+            </div>
+            <div class="third"></div>
+        </nav>
+        <!-- BOARD -->
+        <div id="board">
+            <div id="topOfField">
+                <div class="scoringZone"></div>
+                <div id="centerZone"></div>
+                <div class="scoringZone"></div>
+            </div>
+            <div id="bottomOfField">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </body>
+</html>
