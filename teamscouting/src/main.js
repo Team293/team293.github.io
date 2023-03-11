@@ -1,11 +1,26 @@
-const match = new Match("293", "254", "11", "193", "41", "1089");
+// TODO: Make it able to save
 
-match.redAlliance.robots[0].startingElement = EMPTY;
+let match;
+let selectedRobot = null;
+let selectedGamePieceType = CONE;
 
-setInterval(() => {
+function doInitialInput() {
+  match = new Match(
+    document.getElementById("red-teamnum-1").value,
+    document.getElementById("red-teamnum-2").value,
+    document.getElementById("red-teamnum-3").value,
+    document.getElementById("blue-teamnum-1").value,
+    document.getElementById("blue-teamnum-2").value,
+    document.getElementById("blue-teamnum-3").value
+  );
+  setInterval(() => {
     loop();
-}, 1000 / 60);
+  }, 1000 / 60);
+  document.getElementById("initial-input").style.display = "none";
+  document.getElementById("board").style.display = "";
+  match.setupTeamButtons();
+}
 
 function loop() {
-    match.update();
+  match.update();
 }

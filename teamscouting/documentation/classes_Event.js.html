@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: classes/Event.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,82 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: classes/Event.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Represents events in FRC Matches.
+ * @class Event
+ * @param {Match} match
+ * @param {Robot} robot
+ * @param {string} eventType
+ */
+class Event {
+  /**
+   * @constructor
+   * @param {Match} match
+   * @param {Robot} robot
+   * @param {string} eventType
+   */
+  constructor(match, robot, eventType) {
+    this.match = match;
+    this.robot = robot;
+    this.eventType = eventType;
+  }
+}
 
+/**
+ * Represents a pick up event in FRC Matches.
+ * @class PickUpEvent
+ * @param {Match} match
+ * @param {Robot} robot
+ * @param {string} eventType
+ * @param {number} location
+ */
+class PickUpEvent extends Event {
+  constructor(match, robot, location, pieceType) {
+    super(match, robot, EVENT_TYPES.PICK_UP_PIECE);
+    this.location = location;
+    this.pieceType = pieceType;
+  }
+}
 
-    <h3> </h3>
+/**
+ * Represents a set inventory event in FRC Matches.
+ * @class SetInventoryEvent
+ * @param {Match} match
+ * @param {Robot} robot
+ * @param {number} pieceType
+ */
+class SetInventoryEvent extends Event {
+  constructor(match, robot, pieceType) {
+    super(match, robot, EVENT_TYPES.SET_INVENTORY);
+    this.pieceType = pieceType;
+  }
+}
 
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+/**
+ * Represents a score piece event in FRC Matches.
+ * @class ScorePieceEvent
+ * @param {Match} match
+ * @param {Robot} robot
+ * @param {number} gridPosition
+ */
+class ScorePieceEvent extends Event {
+  constructor(match, robot, gridPosition, pieceType) {
+    super(match, robot, EVENT_TYPES.SCORE_PIECE);
+    this.gridPosition = gridPosition;
+    this.pieceType = pieceType;
+  }
+}</code></pre>
+        </article>
+    </section>
 
 
 

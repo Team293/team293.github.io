@@ -7,7 +7,6 @@
  * @param {Robot} team2
  * @param {Robot} team3
  */
-
 class Alliance {
     /**
      * @constructor

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="xml:lang">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width" />
-        <title>293SPIKE Scouting</title>
+        <title>SPIKE Scouting</title>
         <link rel="stylesheet" href="style.css" />
         <meta name="theme-color" content="#000000" />
         <script src="src/globals.js" defer></script>
@@ -11,8 +11,32 @@
         <script src="src/classes/Alliance.js" defer></script>
         <script src="src/classes/Robot.js" defer></script>
         <script src="src/classes/UserInterface.js" defer></script>
-
+        <script src="src/classes/Event.js" defer></script>
         <script src="src/main.js" defer></script>
+        <script src="src/computed_styles.js" defer></script>
+        <script src="src/button_events.js" defer></script>
+        <script src="src/download_json.js" defer></script>
+        <!-- APPLE TAGS -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <!-- FAVICON TAGS -->
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="favicon/apple-touch-icon.png"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="favicon/favicon-32x32.png"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="favicon/favicon-16x16.png"
+        />
+        <link rel="manifest" href="favicon/site.webmanifest" />
     </head>
     <body>
         <noscript>
@@ -25,11 +49,11 @@
         <nav id="topBar">
             <div class="third left">
                 <button class="buttonSquare" onclick="match.reset()">
-                    <i class="bi bi-skip-start"></i>
+                    <i class="bi bi-skip-start big"></i>
                 </button>
                 <button class="buttonSquare" onclick="match.timer.toggle()">
-                    <i id="playIcon" class="bi bi-play"></i>
-                    <i id="pauseIcon" class="bi bi-pause"></i>
+                    <i id="playIcon" class="bi bi-play big"></i>
+                    <i id="pauseIcon" class="bi bi-pause big"></i>
                 </button>
                 <h3 class="mono" style="color: #999">
                     <span
@@ -37,49 +61,96 @@
                         class="mono"
                         style="color: #000; padding-right: 9px"
                         >00:00.00</span
-                    >/ 2:15
+                    >/ 2:30
                 </h3>
                 <h4 id="matchState" class="bold">AUTO</h4>
+                <h4>|</h4>
+                <h4 id="matchSelectedPiece" class="bold" data-type="cone">CONE</h4>
             </div>
             <div class="third">
                 <div class="flex">
-                    <div
-                        class="bg-red"
-                        style="
-                            width: 12px;
-                            height: 12px;
-                            transform: rotate(45deg);
-                        "
-                    ></div>
+                    <div class="bg-red diamond"></div>
                     <h1 id="scoreRed" class="mono">0</h1>
                 </div>
                 <h1 class="">-</h1>
                 <div class="flex">
                     <h1 id="scoreBlue" class="mono">0</h1>
-                    <div
-                        class="bg-blue"
-                        style="
-                            width: 12px;
-                            height: 12px;
-                            transform: rotate(45deg);
-                        "
-                    ></div>
+                    <div class="bg-blue diamond"></div>
                 </div>
             </div>
-            <div class="third"></div>
+            <div class="third right">
+                <button
+                    class="buttonSquare"
+                    onclick="UserInterface.toggleFullscreen()"
+                >
+                    <i id="fullscreen" class="bi bi-fullscreen"></i>
+                    <i
+                        id="fullscreenExit"
+                        class="bi bi-fullscreen-exit hidden"
+                    ></i>
+                </button>
+            </div>
         </nav>
+        <!-- INITIAL INPUT -->
+        <div id="initial-input">
+            <input type="number" id="red-teamnum-1" value="293"></input>
+            <input type="number" id="red-teamnum-2" value="294"></input>
+            <input type="number" id="red-teamnum-3" value="295"></input>
+            <input type="number" id="blue-teamnum-1" value="296"></input>
+            <input type="number" id="blue-teamnum-2" value="297"></input>
+            <input type="number" id="blue-teamnum-3" value="298"></input>
+            <button class="default-button" onclick="doInitialInput()">Finish setup</button>
+        </div>
         <!-- BOARD -->
-        <div id="board">
+        <div id="board" style="display:none">
             <div id="topOfField">
-                <div class="scoringZone"></div>
-                <div id="centerZone"></div>
-                <div class="scoringZone"></div>
+                <div class="scoringGrid" id="redAlliance"></div>
+                <div class="centerField">
+                    <div id="robots">
+                        <button data-alliance="red" data-team-index="1">293</button>
+                        <button data-alliance="red" data-team-index="2">293</button>
+                        <button data-alliance="red" data-team-index="3">293</button>
+                        <button data-alliance="blue" data-team-index="1">293</button>
+                        <button data-alliance="blue" data-team-index="2">293</button>
+                        <button data-alliance="blue" data-team-index="3">293</button>
+                    </div>
+                    <div id="field">
+                        <div id="chargeStationRed" class="chargeStation">
+                            <button onclick="doDock()" disabled>Dock</button>
+                            <button onclick="doEngage()" disabled>Engage</button>
+                        </div>
+                        <div id="chargeStationBlue" class="chargeStation">
+                            <button onclick="doDock()" disabled>Dock</button>
+                            <button onclick="doEngage()" disabled>Engage</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="scoringGrid" id="blueAlliance"></div>
             </div>
             <div id="bottomOfField">
-                <div></div>
-                <div></div>
-                <div></div>
+                <div class="loadingZone blueSubstation">
+                    <button onclick="doSingleSubstation()" disabled>Single Subst.</button>
+                    <button onclick="doDoubleSubstation()" disabled>Double Subst.</button>
+                </div>
+                <div class="centerZone centerBottom">
+                    <button onclick="doFieldPickup()" disabled>Field Pickup</button>
+                    <button onclick="doFieldDrop()" disabled>Field Drop</button>
+                    <button id="mobilityBonusBtn" onclick="doMobilityBonus()" disabled>Mobility Bonus</button>
+                    <button id="disabledBtn" onclick="toggleEnabled()" disabled>Disable</button>
+                    <div class="break"><!-- I hate flexbox --></div>
+                    <button class="gamePieceSelector" id="cubeSelector" onclick="selectGamePiece(CUBE)">Cube</button>
+                    <button class="gamePieceSelector" id="coneSelector" onclick="selectGamePiece(CONE)">Cone</button>
+                    <button id="downloadBtn" onclick="downloadSerializedMatch()">Download Match Data</button>
+                    <!-- <label for="matchUpload" id="matchUploadLabel">Upload Match File</label>
+                    <input type="file" id="matchUpload" name="matchUpload" accept="text/json" onchange="updateUploadLabel()"></input>
+                    <button id="uploadBtn" onclick="uploadSerializedMatch()">Upload Match Data</button> -->
+                </div>
+                <div class="loadingZone redSubstation">
+                    <button onclick="doSingleSubstation()" disabled>Single Subst.</button>
+                    <button onclick="doDoubleSubstation()" disabled>Double Subst.</button>
+                </div>
             </div>
         </div>
+        <a id="downloadAnchorElem" style="display:none"><!-- shhhh --></a>
     </body>
 </html>
