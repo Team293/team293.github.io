@@ -126,10 +126,10 @@ const UserInterface = {
       let btn = getRobotButton(robot);
       if (robot.inventory === CUBE) {
         btn.innerHTML =
-          robot.team + '<div class="inventory" data-type="cube"></div>';
+          robot.team + ' <div class="inventory" data-type="cube"></div>';
       } else if (robot.inventory === CONE) {
         btn.innerHTML =
-          robot.team + '<div class="inventory" data-type="cone"></div>';
+          robot.team + ' <div class="inventory" data-type="cone"></div>';
       } else {
         btn.innerHTML = robot.team;
       }
@@ -156,6 +156,8 @@ for (let row = 0; row < 9; row++) {
     button.setAttribute("data-index", index);
     // add event listener
     button.addEventListener("click", (e) => fieldButtonPressed(e));
+    if (col !== 2)
+      button.classList.add(row % 3 === 1 ? "cube-node" : "cone-node");
     redAlliance.appendChild(button);
   }
 }
@@ -172,6 +174,8 @@ for (let row = 0; row < 9; row++) {
     button.setAttribute("data-index", index);
     // add event listener
     button.addEventListener("click", (e) => fieldButtonPressed(e));
+    if (col !== 2)
+      button.classList.add(row % 3 === 1 ? "cube-node" : "cone-node");
     blueAlliance.appendChild(button);
   }
 }

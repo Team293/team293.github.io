@@ -71,7 +71,7 @@ class Robot {
    */
   pickUp(gamePiece, location) {
     if (this.inventory === EMPTY) {
-      this.inventory(gamePiece);
+      this.setInventory(gamePiece);
       this.alliance.match.events.push(
         new PickUpEvent(this.alliance.match, this, location, gamePiece)
       );
@@ -165,6 +165,7 @@ class Robot {
   }
 
   toggleDocked() {
+    if (this.docked && this.engaged) this.toggleEngaged();
     this.docked = !this.docked;
     if (this.docked) {
       this.alliance.match.events.push(new DockEvent(this.alliance.match, this));
@@ -175,6 +176,7 @@ class Robot {
 
   toggleEngaged() {
     this.engaged = !this.engaged;
+    if (!this.docked && this.engaged) this.toggleDocked();
     if (this.engaged) {
       this.alliance.match.events.push(new EngageEvent(this.alliance.match, this));
     } else {

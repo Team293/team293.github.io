@@ -6,18 +6,25 @@
  * @param {string} eventType
  */
 class Event {
-  /**
-   * @constructor
-   * @param {Match} match
-   * @param {Robot} robot
-   * @param {string} eventType
-   */
-  constructor(match, robot, eventType) {
-    this.match = match;
-    this.robot = robot;
-    this.eventType = eventType;
-    this.time = this.match.timer.time;
-  }
+    /**
+     * @constructor
+     * @param {Match} match
+     * @param {Robot} robot
+     * @param {string} eventType
+     */
+    constructor(match, robot, eventType) {
+        this.match = match;
+        this.robot = robot;
+        this.eventType = eventType;
+        this.time = this.match.timer.time;
+    }
+
+    get type() {
+        return this.eventType;
+    }
+    get isAuto() {
+        return this.time < 15;
+    }
 }
 
 /**
@@ -29,11 +36,11 @@ class Event {
  * @param {number} location
  */
 class PickUpEvent extends Event {
-  constructor(match, robot, location, pieceType) {
-    super(match, robot, EVENT_TYPES.PICK_UP_PIECE);
-    this.location = location;
-    this.pieceType = pieceType;
-  }
+    constructor(match, robot, location, pieceType) {
+        super(match, robot, EVENT_TYPES.PICK_UP_PIECE);
+        this.location = location;
+        this.pieceType = pieceType;
+    }
 }
 
 /**
@@ -44,10 +51,22 @@ class PickUpEvent extends Event {
  * @param {number} pieceType
  */
 class SetInventoryEvent extends Event {
-  constructor(match, robot, pieceType) {
-    super(match, robot, EVENT_TYPES.SET_INVENTORY);
-    this.pieceType = pieceType;
-  }
+    constructor(match, robot, pieceType) {
+        super(match, robot, EVENT_TYPES.SET_INVENTORY);
+        this.pieceType = pieceType;
+    }
+}
+
+/**
+ * Represents a clear inventory event in FRC Matches.
+ * @class ClearInventoryEvent
+ * @param {Match} match
+ * @param {Robot} robot
+ */
+class ClearInventoryEvent extends Event {
+    constructor(match, robot) {
+        super(match, robot, EVENT_TYPES.CLEAR_INVENTORY);
+    }
 }
 
 /**
@@ -58,11 +77,41 @@ class SetInventoryEvent extends Event {
  * @param {number} gridPosition
  */
 class ScorePieceEvent extends Event {
-  constructor(match, robot, gridPosition, pieceType) {
-    super(match, robot, EVENT_TYPES.SCORE_PIECE);
-    this.gridPosition = gridPosition;
-    this.pieceType = pieceType;
-  }
+    constructor(match, robot, gridPosition, pieceType) {
+        super(match, robot, EVENT_TYPES.SCORE_PIECE);
+        this.gridPosition = gridPosition;
+        this.pieceType = pieceType;
+    }
+
+    get location() {
+        return this.gridPosition < 9
+            ? TOP
+            : this.gridPosition < 18
+            ? MIDDLE
+            : BOTTOM;
+    }
+}
+
+/**
+ * Represents a dislodge piece event in FRC Matches.
+ * @class DislodgePieceEvent
+ * @param {Match} match
+ * @param {Robot} robot
+ * @param {number} gridPosition
+ */
+class DislodgePieceEvent extends Event {
+    constructor(match, robot, gridPosition) {
+        super(match, robot, EVENT_TYPES.DISLODGE_PIECE);
+        this.gridPosition = gridPosition;
+    }
+
+    get location() {
+        return this.gridPosition < 9
+            ? TOP
+            : this.gridPosition < 18
+            ? MIDDLE
+            : BOTTOM;
+    }
 }
 
 /**
@@ -72,9 +121,9 @@ class ScorePieceEvent extends Event {
  * @param {Robot} robot
  */
 class EarnMobilityEvent extends Event {
-  constructor(match, robot) {
-    super(match, robot, EVENT_TYPES.EARN_MOBILITY_BONUS);
-  }
+    constructor(match, robot) {
+        super(match, robot, EVENT_TYPES.EARN_MOBILITY_BONUS);
+    }
 }
 
 /**
@@ -84,9 +133,9 @@ class EarnMobilityEvent extends Event {
  * @param {Robot} robot
  */
 class DropPieceEvent extends Event {
-  constructor(match, robot) {
-    super(match, robot, EVENT_TYPES.DROP_PIECE);
-  }
+    constructor(match, robot) {
+        super(match, robot, EVENT_TYPES.DROP_PIECE);
+    }
 }
 
 /**
@@ -96,9 +145,9 @@ class DropPieceEvent extends Event {
  * @param {Robot} robot
  */
 class EnabledEvent extends Event {
-  constructor(match, robot) {
-    super(match, robot, EVENT_TYPES.ENABLED);
-  }
+    constructor(match, robot) {
+        super(match, robot, EVENT_TYPES.ENABLED);
+    }
 }
 
 /**
@@ -108,9 +157,9 @@ class EnabledEvent extends Event {
  * @param {Robot} robot
  */
 class DisabledEvent extends Event {
-  constructor(match, robot) {
-    super(match, robot, EVENT_TYPES.DISABLED);
-  }
+    constructor(match, robot) {
+        super(match, robot, EVENT_TYPES.DISABLED);
+    }
 }
 
 /**
@@ -120,9 +169,9 @@ class DisabledEvent extends Event {
  * @param {Robot} robot
  */
 class DockEvent extends Event {
-  constructor(match, robot) {
-    super(match, robot, EVENT_TYPES.CHARGE_STATION_DOCK);
-  }
+    constructor(match, robot) {
+        super(match, robot, EVENT_TYPES.CHARGE_STATION_DOCK);
+    }
 }
 
 /**
@@ -132,9 +181,9 @@ class DockEvent extends Event {
  * @param {Robot} Robot
  */
 class UndockEvent extends Event {
-  constructor(match, robot) {
-    super(match, robot, EVENT_TYPES.CHARGE_STATION_UNDOCK);
-  }
+    constructor(match, robot) {
+        super(match, robot, EVENT_TYPES.CHARGE_STATION_UNDOCK);
+    }
 }
 
 /**
@@ -144,9 +193,9 @@ class UndockEvent extends Event {
  * @param {Robot} robot
  */
 class EngageEvent extends Event {
-  constructor(match, robot) {
-    super(match, robot, EVENT_TYPES.CHARGE_STATION_ENGAGE);
-  }
+    constructor(match, robot) {
+        super(match, robot, EVENT_TYPES.CHARGE_STATION_ENGAGE);
+    }
 }
 
 /**
@@ -156,7 +205,7 @@ class EngageEvent extends Event {
  * @param {Robot} robot
  */
 class DisengageEvent extends Event {
-  constructor(match, robot) {
-    super(match, robot, EVENT_TYPES.CHARGE_STATION_DISENGAGE);
-  }
+    constructor(match, robot) {
+        super(match, robot, EVENT_TYPES.CHARGE_STATION_DISENGAGE);
+    }
 }

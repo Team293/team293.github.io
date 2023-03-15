@@ -6,6 +6,8 @@
         <title>SPIKE Scouting</title>
         <link rel="stylesheet" href="style.css" />
         <meta name="theme-color" content="#000000" />
+        <script type="module" src="src/imports.js"></script>
+        <script src="src/upload.js" defer></script>
         <script src="src/globals.js" defer></script>
         <script src="src/classes/Match.js" defer></script>
         <script src="src/classes/Alliance.js" defer></script>
@@ -63,12 +65,13 @@
                         >00:00.00</span
                     >/ 2:30
                 </h3>
-                <h4 id="matchState" class="bold">AUTO</h4>
-                <h4>|</h4>
+                <h4>Gamemode: </h4>
+                <h4 id="matchState" class="bold">NONE</h4>
+                <h4>| Selected Piece: </h4>
                 <h4 id="matchSelectedPiece" class="bold" data-type="cone">CONE</h4>
             </div>
             <div class="third">
-                <div class="flex">
+                <!-- <div class="flex">
                     <div class="bg-red diamond"></div>
                     <h1 id="scoreRed" class="mono">0</h1>
                 </div>
@@ -76,7 +79,7 @@
                 <div class="flex">
                     <h1 id="scoreBlue" class="mono">0</h1>
                     <div class="bg-blue diamond"></div>
-                </div>
+                </div> -->
             </div>
             <div class="third right">
                 <button
@@ -93,12 +96,35 @@
         </nav>
         <!-- INITIAL INPUT -->
         <div id="initial-input">
-            <input type="number" id="red-teamnum-1" value="293"></input>
-            <input type="number" id="red-teamnum-2" value="294"></input>
-            <input type="number" id="red-teamnum-3" value="295"></input>
-            <input type="number" id="blue-teamnum-1" value="296"></input>
-            <input type="number" id="blue-teamnum-2" value="297"></input>
-            <input type="number" id="blue-teamnum-3" value="298"></input>
+            <input type="number" id="red-teamnum-1" value="293" class="red-team-input"></input>
+            <input type="number" id="red-teamnum-2" value="294" class="red-team-input"></input>
+            <input type="number" id="red-teamnum-3" value="295" class="red-team-input"></input>
+            <input type="number" id="blue-teamnum-1" value="296" class="blue-team-input"></input>
+            <input type="number" id="blue-teamnum-2" value="297" class="blue-team-input"></input>
+            <input type="number" id="blue-teamnum-3" value="298" class="blue-team-input"></input>
+            <br/>
+            <label for="matchType">Match Type:</label>
+            <select id="matchType" name="matchType">
+                <option value="practice">Practice</option>
+                <option value="qualifier">Qualifier</option>
+                <option value="playoffs">Playoffs</option>
+                <option value="" selected>N/A</option>
+            </select>
+            <label for="compType">Competition Type:</label>
+            <select id="compType" name="compType">
+                <option value="robbinsville">Robbinsville</option>
+                <option value="montgomery">Montgomery</option>
+                <option value="lehigh">Lehigh</option>
+                <option value="worlds">Worlds</option>
+                <option value="" selected>N/A</option>
+            </select>
+            <label for="match-number">Match number:</label>
+            <input type="number" name="match-number" id="match-number" value="1"></input>
+            <br/>
+            <label for="email">DB Email:</label>
+            <input type="text" id="email" name="email"></input>
+            <label for="password">DB Password:</label>
+            <input type="password" id="password" name="password"></input>
             <button class="default-button" onclick="doInitialInput()">Finish setup</button>
         </div>
         <!-- BOARD -->
@@ -116,12 +142,12 @@
                     </div>
                     <div id="field">
                         <div id="chargeStationRed" class="chargeStation">
-                            <button onclick="doDock()" disabled>Dock</button>
-                            <button onclick="doEngage()" disabled>Engage</button>
+                            <button id="redDockBtn" onclick="doDock()" disabled>Dock</button>
+                            <button id="redEngageBtn" onclick="doEngage()" disabled>Engage</button>
                         </div>
                         <div id="chargeStationBlue" class="chargeStation">
-                            <button onclick="doDock()" disabled>Dock</button>
-                            <button onclick="doEngage()" disabled>Engage</button>
+                            <button id="blueDockBtn" onclick="doDock()" disabled>Dock</button>
+                            <button id="blueEngageBtn" onclick="doEngage()" disabled>Engage</button>
                         </div>
                     </div>
                 </div>
@@ -129,8 +155,8 @@
             </div>
             <div id="bottomOfField">
                 <div class="loadingZone blueSubstation">
-                    <button onclick="doSingleSubstation()" disabled>Single Subst.</button>
                     <button onclick="doDoubleSubstation()" disabled>Double Subst.</button>
+                    <button onclick="doSingleSubstation()" disabled>Single Subst.</button>
                 </div>
                 <div class="centerZone centerBottom">
                     <button onclick="doFieldPickup()" disabled>Field Pickup</button>
@@ -146,8 +172,8 @@
                     <button id="uploadBtn" onclick="uploadSerializedMatch()">Upload Match Data</button> -->
                 </div>
                 <div class="loadingZone redSubstation">
-                    <button onclick="doSingleSubstation()" disabled>Single Subst.</button>
                     <button onclick="doDoubleSubstation()" disabled>Double Subst.</button>
+                    <button onclick="doSingleSubstation()" disabled>Single Subst.</button>
                 </div>
             </div>
         </div>
