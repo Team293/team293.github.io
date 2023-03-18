@@ -19,7 +19,7 @@ class DatabaseConnector {
 
     async export() {}
 
-    async generateMatch(match) {
+    async uploadMatch(matchJSON) {
         const pb = this.pb;
         if (!this.auth) {
             console.log("Not authenticated. Please authenticate first.");
@@ -125,18 +125,43 @@ class DatabaseConnector {
 
     saveMatchToLocalStorage(match) {
         const matchData = this.generateJSON(match);
-        const matchId = `MATCH-${match.compType}-${match.matchType}-${match.matchNumber}`;
+        const matchId = `MATCH-${match.compType}-${match.matchType}-${match.matchNumber}-${Math.floor(Math.random() * 10000)}`;
         localStorage.setItem(matchId, matchData);
+    }
+
+    async uploadAllLocalMatches() {
+        const pb = this.pb;
+        const uploadButton = document.getElementById("uploadToServer");
+        uploadButton.disabled = true;
+        uploadButton.innerText = "Uploading...";
+        await db.authenticate(
+            document.getElementById("email").value,
+            document.getElementById("password").value
+        );
+        try {
+            // loop through local storage and upload everything starting with MATCH-
+            i
+            for await (let value of localStorage.keys()) {
+                uploadButton.innerText = `Uploading ${i + 1}/${localStorage.length}`;
+                const key = localStorage.key(i);
+                if (key.startsWith("MATCH-")) {
+                    pb.collection("matches").create({
+                        matchData: localStorage[key],
+                        date: new Date().toUTCString(),
+                    });
+                }
+            }
+            uploadButton.innerText = "Upload Complete";
+        } catch (err) {
+            uploadButton.disabled = false;
+            uploadButton.innerText = "Failed to upload";
+            setTimeout(() => {
+                uploadButton.innerText = "Upload to Server";
+            }, 2000);
+        }
     }
 }
 
-async function generateTest() {
-    const db = new DatabaseConnector();
-    window.db = db;
-    await db.authenticate(
-        document.getElementById("email").value,
-        document.getElementById("password").value
-    );
-}
+const db = new DatabaseConnector();
 
 window.generateTest = generateTest;

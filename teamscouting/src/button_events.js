@@ -245,3 +245,44 @@ document
     );
 
 window.addEventListener("load", updateButtonDisabledStates);
+
+function saveToLocalStorage() {
+    console.log("Saving...");
+    const button = document.getElementById("saveToLocalStorage");
+    try {
+        // save the match to local storage
+        window.db.saveToLocalStorage();
+        button.innerText = "Saved";
+        setTimeout(() => {
+            button.innerText = "Save Locally";
+        }, 2000);
+    } catch (err) {
+        console.log(err);
+        button.innerText = "Could not save";
+        setTimeout(() => {
+            button.innerText = "Save Locally";
+        }, 2000);
+    }
+}
+
+async function serverUpload() {
+    const button = document.getElementById("saveToLocalStorage");
+    try {
+        // save the match to local storage        db.saveToLocalStorage();
+        await window.db.authenticate(
+            document.getElementById("email").value,
+            document.getElementById("password").value
+        );
+        window.db.uploadAllLocalMatches();
+        button.innerText = "Uploaded";
+        setTimeout(() => {
+            button.innerText = "Upload to Server";
+        }, 2000);
+    } catch (err) {
+        console.log(err);
+        button.innerText = "Could not upload";
+        setTimeout(() => {
+            button.innerText = "Upload to Server";
+        }, 2000);
+    }
+}

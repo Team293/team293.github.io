@@ -166,7 +166,9 @@
                     <div class="break"><!-- I hate flexbox --></div>
                     <button class="gamePieceSelector" id="cubeSelector" onclick="selectGamePiece(CUBE)">Cube</button>
                     <button class="gamePieceSelector" id="coneSelector" onclick="selectGamePiece(CONE)">Cone</button>
-                    <button id="downloadBtn" onclick="downloadSerializedMatch()">Download Match Data</button>
+                    <button id="downloadBtn" onclick="downloadSerializedMatch()">Download</button>
+                    <button id="saveToLocalStorage" onclick="saveToLocalStorage()">Save Locally</button>
+                    <button id="uploadToServer" onclick="serverUpload()">Upload to Server</button>
                     <!-- <label for="matchUpload" id="matchUploadLabel">Upload Match File</label>
                     <input type="file" id="matchUpload" name="matchUpload" accept="text/json" onchange="updateUploadLabel()"></input>
                     <button id="uploadBtn" onclick="uploadSerializedMatch()">Upload Match Data</button> -->

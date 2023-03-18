@@ -66,7 +66,7 @@ class Match {
             // Whether the timer is running or not
             running: false,
             autoLength: 15, // seconds
-            matchLength: 135, // 2:15 in seconds
+            matchLength: 150, // 2:30 in seconds
             // whether we are in auto or teleop
             lastUpdate: Date.now(),
             deltaTime: 0,
